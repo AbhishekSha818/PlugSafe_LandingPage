@@ -402,36 +402,21 @@ const DeviceVerification = () => {
           </div>
         </div>
 
-        {/* Status Indicator (Switch-like) */}
+        {/* Status Indicator (Labels Only) */}
         <div className="mt-6 sm:mt-8 md:mt-10 flex justify-center">
-          <div className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 bg-gray-200 dark:bg-slate-700 rounded-full border-2 border-gray-300 dark:border-slate-600 flex items-center transition-all duration-300 overflow-visible">
-            {/* Left label - Unverified (ALWAYS VISIBLE on top) */}
-            <div className={`absolute left-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold transition-colors duration-500 pointer-events-none z-20 drop-shadow-lg ${
+          <div className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 flex items-center justify-between transition-all duration-300">
+            {/* Left label - Unverified */}
+            <div className={`flex-1 flex items-center justify-center text-xs sm:text-sm font-bold transition-colors duration-500 drop-shadow-lg ${
               isVerified ? 'text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'
             }`}>
               ○ Unverified
             </div>
 
-            {/* Right label - Safe (ALWAYS VISIBLE on top) */}
-            <div className={`absolute right-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold transition-colors duration-500 pointer-events-none z-20 drop-shadow-lg ${
+            {/* Right label - Safe */}
+            <div className={`flex-1 flex items-center justify-center text-xs sm:text-sm font-bold transition-colors duration-500 drop-shadow-lg ${
               isVerified ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
             }`}>
               Safe ✓
-            </div>
-
-            {/* Animated indicator - Behind labels with transparency */}
-            <div
-              className={`absolute left-0 w-1/2 h-full rounded-full transition-all duration-500 flex items-center justify-center font-bold text-lg sm:text-xl z-10 ${
-                isVerified
-                  ? 'translate-x-full bg-gradient-to-r from-primary-green to-green-500 text-white shadow-lg shadow-primary-green/50'
-                  : 'bg-red-500 text-white shadow-lg shadow-red-500/50'
-              }`}
-              style={{
-                transform: isVerified ? 'translateX(100%)' : 'translateX(0)',
-                opacity: 0.7,
-              }}
-            >
-              {isVerified ? '✓' : '○'}
             </div>
           </div>
         </div>
