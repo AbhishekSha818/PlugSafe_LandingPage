@@ -164,14 +164,14 @@ const DeviceVerification = () => {
         setShowCheckmark(true);
         playSuccessSound();
 
-        // USB snaps back to left after verification (don't stick to PlugSafe)
+        // USB stays at PlugSafe position (don't snap back)
         setUsbPosition({
-          x: 24,
+          x: plugSafePos.x + 30,
           y: 0,
         });
       } else {
-        // Reset to left (with left margin same as right)
-        setUsbPosition({ x: 24, y: 0 });
+        // Failed - just stop dragging, don't move
+        // (USB stays wherever it was)
       }
     }
 
@@ -249,14 +249,13 @@ const DeviceVerification = () => {
         setShowCheckmark(true);
         playSuccessSound();
 
-        // USB snaps back to left after verification (don't stick to PlugSafe)
+        // USB stays at PlugSafe position (don't snap back)
         setUsbPosition({
-          x: 24,
+          x: plugSafePos.x + 30,
           y: 0,
         });
-      } else {
-        setUsbPosition({ x: 24, y: 0 });
       }
+      // If collision not detected, just stop dragging (USB stays where it is)
     }
 
     setPlugSafeHighlight(false);
@@ -281,12 +280,13 @@ const DeviceVerification = () => {
           {/* USB Device */}
           <div
             ref={usbRef}
-            className={`absolute z-20 cursor-grab active:cursor-grabbing transition-all duration-300 select-none top-1/2 transform -translate-y-1/2 ${
+            className={`absolute z-20 cursor-grab active:cursor-grabbing select-none top-1/2 transform -translate-y-1/2 ${
               isDragging ? 'opacity-90' : 'opacity-100'
             }`}
             style={{
               left: `${usbPosition.x}px`,
               transform: isDragging ? 'scale(1.05) translateY(-50%)' : 'translateY(-50%)',
+              transition: isDragging ? 'opacity 0.1s ease-out' : 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             }}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
@@ -362,26 +362,27 @@ const DeviceVerification = () => {
 
         {/* Status Indicator (Switch-like) */}
         <div className="mt-6 sm:mt-8 md:mt-10 flex justify-center">
-          <div className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 bg-gray-200 dark:bg-slate-700 rounded-full border-2 border-gray-300 dark:border-slate-600 flex items-center transition-all duration-300 overflow-hidden">
-            {/* Left label - Unverified */}
-            <div className="absolute left-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 transition-colors duration-300 pointer-events-none">
+          <div className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 bg-gray-200 dark:bg-slate-700 rounded-full border-2 border-gray-300 dark:border-slate-600 flex items-center transition-all duration-300 overflow-visible">
+            {/* Left label - Unverified (ALWAYS VISIBLE on top) */}
+            <div className="absolute left-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white transition-colors duration-300 pointer-events-none z-20 drop-shadow-lg">
               ○ Unverified
             </div>
 
-            {/* Right label - Safe */}
-            <div className="absolute right-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 transition-colors duration-300 pointer-events-none">
+            {/* Right label - Safe (ALWAYS VISIBLE on top) */}
+            <div className="absolute right-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white transition-colors duration-300 pointer-events-none z-20 drop-shadow-lg">
               Safe ✓
             </div>
 
-            {/* Animated indicator */}
+            {/* Animated indicator - Behind labels with transparency */}
             <div
-              className={`absolute left-0 w-1/2 h-full rounded-full transition-all duration-500 flex items-center justify-center font-bold text-lg sm:text-xl ${
+              className={`absolute left-0 w-1/2 h-full rounded-full transition-all duration-500 flex items-center justify-center font-bold text-lg sm:text-xl z-10 ${
                 isVerified
                   ? 'translate-x-full bg-gradient-to-r from-primary-green to-green-500 text-white shadow-lg shadow-primary-green/50'
                   : 'bg-red-500 text-white shadow-lg shadow-red-500/50'
               }`}
               style={{
                 transform: isVerified ? 'translateX(100%)' : 'translateX(0)',
+                opacity: 0.7,
               }}
             >
               {isVerified ? '✓' : '○'}
