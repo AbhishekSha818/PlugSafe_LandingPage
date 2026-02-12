@@ -22,7 +22,9 @@ const DeviceVerification = () => {
       setIsVerified(false);
       setShowCheckmark(false);
       setStatusX(0);
-      setUsbPosition({ x: 0, y: 0 });
+      // Initialize USB in center vertically with left gap matching PlugSafe right gap
+      // Using approximate gap values: 24px (sm:40px, md:48px) converted to approximate pixel
+      setUsbPosition({ x: 24, y: 0 });
       setPlugSafeHighlight(false);
     };
 
@@ -93,19 +95,17 @@ const DeviceVerification = () => {
     setIsDragging(true);
   };
 
-  // Mouse move - follow mouse
+  // Mouse move - follow mouse (X only, Y stays centered)
   const handleMouseMove = (e) => {
     if (!isDragging || !containerRef.current) return;
 
     const containerRect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - containerRect.left - dragOffsetRef.current.x;
-    const y = e.clientY - containerRect.top - dragOffsetRef.current.y;
 
-    // Constrain to container
+    // Constrain to container (X only)
     const constrainedX = Math.max(0, Math.min(x, containerRect.width - 60));
-    const constrainedY = Math.max(0, Math.min(y, containerRect.height - 100));
 
-    setUsbPosition({ x: constrainedX, y: constrainedY });
+    setUsbPosition({ x: constrainedX, y: 0 }); // Y stays at 0 (handled by CSS centering)
 
     // Check proximity to PlugSafe
     if (plugSafeRef.current) {
@@ -115,8 +115,10 @@ const DeviceVerification = () => {
         y: plugSafeRect.top - containerRect.top,
       };
 
+      // For collision detection, use container center for USB Y
+      const containerCenterY = containerRect.height / 2;
       const isNear = checkProximity(
-        { x: constrainedX, y: constrainedY },
+        { x: constrainedX, y: containerCenterY },
         plugSafePos
       );
       setPlugSafeHighlight(isNear);
@@ -138,8 +140,11 @@ const DeviceVerification = () => {
         y: plugSafeRect.top - containerRect.top,
       };
 
+      // Use container center for USB Y position
+      const containerCenterY = containerRect.height / 2;
+      
       // Check collision
-      if (detectCollision(usbPosition, plugSafePos)) {
+      if (detectCollision({ x: usbPosition.x, y: containerCenterY }, plugSafePos)) {
         // Successful verification
         setIsVerified(true);
         setStatusX(200); // Move status indicator to right
@@ -149,11 +154,11 @@ const DeviceVerification = () => {
         // Snap USB to PlugSafe center
         setUsbPosition({
           x: plugSafePos.x + 30,
-          y: plugSafePos.y - 10,
+          y: 0,
         });
       } else {
-        // Reset to left
-        setUsbPosition({ x: 0, y: 0 });
+        // Reset to left (with left margin same as right)
+        setUsbPosition({ x: 24, y: 0 });
       }
     }
 
@@ -190,12 +195,10 @@ const DeviceVerification = () => {
     const containerRect = containerRef.current.getBoundingClientRect();
     const touch = e.touches[0];
     const x = touch.clientX - containerRect.left - dragOffsetRef.current.x;
-    const y = touch.clientY - containerRect.top - dragOffsetRef.current.y;
 
     const constrainedX = Math.max(0, Math.min(x, containerRect.width - 60));
-    const constrainedY = Math.max(0, Math.min(y, containerRect.height - 100));
 
-    setUsbPosition({ x: constrainedX, y: constrainedY });
+    setUsbPosition({ x: constrainedX, y: 0 }); // Y stays at 0 (handled by CSS centering)
 
     if (plugSafeRef.current) {
       const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
@@ -204,8 +207,9 @@ const DeviceVerification = () => {
         y: plugSafeRect.top - containerRect.top,
       };
 
+      const containerCenterY = containerRect.height / 2;
       const isNear = checkProximity(
-        { x: constrainedX, y: constrainedY },
+        { x: constrainedX, y: containerCenterY },
         plugSafePos
       );
       setPlugSafeHighlight(isNear);
@@ -226,7 +230,9 @@ const DeviceVerification = () => {
         y: plugSafeRect.top - containerRect.top,
       };
 
-      if (detectCollision(usbPosition, plugSafePos)) {
+      const containerCenterY = containerRect.height / 2;
+
+      if (detectCollision({ x: usbPosition.x, y: containerCenterY }, plugSafePos)) {
         setIsVerified(true);
         setStatusX(200);
         setShowCheckmark(true);
@@ -234,10 +240,10 @@ const DeviceVerification = () => {
 
         setUsbPosition({
           x: plugSafePos.x + 30,
-          y: plugSafePos.y - 10,
+          y: 0,
         });
       } else {
-        setUsbPosition({ x: 0, y: 0 });
+        setUsbPosition({ x: 24, y: 0 });
       }
     }
 
@@ -263,13 +269,12 @@ const DeviceVerification = () => {
           {/* USB Device */}
           <div
             ref={usbRef}
-            className={`absolute z-20 cursor-grab active:cursor-grabbing transition-all duration-300 select-none ${
+            className={`absolute z-20 cursor-grab active:cursor-grabbing transition-all duration-300 select-none top-1/2 transform -translate-y-1/2 ${
               isDragging ? 'opacity-90' : 'opacity-100'
             }`}
             style={{
               left: `${usbPosition.x}px`,
-              top: `${usbPosition.y}px`,
-              transform: isDragging ? 'scale(1.05)' : 'scale(1)',
+              transform: isDragging ? 'scale(1.05) translateY(-50%)' : 'translateY(-50%)',
             }}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
