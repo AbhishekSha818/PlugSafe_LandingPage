@@ -31,6 +31,21 @@ const DeviceVerification = () => {
     resetPositions();
   }, []);
 
+  // Setup document-level mouse event listeners for smooth dragging
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, usbPosition, isVerified]);
+
   // Play success sound
   const playSuccessSound = () => {
     try {
@@ -275,14 +290,14 @@ const DeviceVerification = () => {
             }`}
             style={{
               left: `${usbPosition.x}px`,
-              transform: isDragging ? 'scale(1.05) translateY(-50%) rotate(90deg)' : 'translateY(-50%) rotate(90deg)',
+              transform: isDragging ? 'scale(1.05) translateY(-50%)' : 'translateY(-50%)',
             }}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
           >
-            {/* USB Device Visual - Rotated 90 degrees */}
+            {/* USB Device Visual */}
             <div className="w-12 sm:w-14 md:w-16 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 rounded-lg shadow-lg flex flex-col items-center justify-start p-2 border-2 border-slate-400 dark:border-slate-600">
-              {/* USB Port - Now faces right after rotation */}
+              {/* USB Port */}
               <div className="w-6 sm:w-7 md:w-8 h-3 sm:h-4 bg-yellow-600 rounded-sm mt-2 shadow-inner"></div>
 
               {/* USB Icon */}
