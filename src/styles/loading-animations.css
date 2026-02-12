@@ -1,0 +1,314 @@
+/* ============================================
+   Loading Screen Animation Styles
+   Comprehensive neon-themed loading animations
+   ============================================ */
+
+/* Main loading screen container animations */
+@keyframes fadeInScreen {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.loading-screen {
+  animation: fadeInScreen 0.3s ease-out;
+}
+
+/* Background glow pulse animation */
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.loading-background-glow {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* Device and port animations */
+@keyframes deviceGlowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 15px rgba(119, 242, 126, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(119, 242, 126, 0.6));
+  }
+}
+
+.device-outline {
+  animation: deviceGlowPulse 2s ease-in-out infinite 0.2s;
+}
+
+/* USB port glow animation */
+@keyframes portGlowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(119, 242, 126, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(119, 242, 126, 0.7));
+  }
+}
+
+#usb-port {
+  animation: portGlowPulse 1.5s ease-in-out infinite;
+}
+
+/* Pendrive sliding into port animation */
+@keyframes slideIntoPort {
+  0% {
+    transform: translateY(-50%) translateX(0);
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-50%) translateX(145px);
+    opacity: 0.95;
+  }
+}
+
+.pendrive-sliding {
+  animation: slideIntoPort 1.4s cubic-bezier(0.4, 0.0, 0.2, 1) 0.4s forwards;
+}
+
+/* Status text animations */
+@keyframes statusFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status-text {
+  animation: statusFadeIn 0.4s ease-out;
+}
+
+/* PlugSafe Logo animations */
+@keyframes logoZoomIn {
+  0% {
+    transform: scale(0.3) translateY(20px);
+    opacity: 0;
+    filter: drop-shadow(0 0 0px rgba(119, 242, 126, 0));
+  }
+  50% {
+    transform: scale(1.1) translateY(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    filter: drop-shadow(0 0 20px rgba(119, 242, 126, 0.6));
+  }
+}
+
+.plugsafe-logo-animation {
+  animation: logoZoomIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+            iconPulseGlow 2s ease-in-out 0.8s infinite;
+}
+
+/* Icon pulse glow animation */
+@keyframes iconPulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(119, 242, 126, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 40px rgba(119, 242, 126, 0.8));
+  }
+}
+
+/* USB icon pop animation */
+@keyframes usbIconPop {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#usb-icon {
+  animation: usbIconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards;
+}
+
+/* Checkmark draw animation */
+@keyframes checkmarkDraw {
+  0% {
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 50;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+#checkmark-icon {
+  animation: checkmarkDraw 0.6s ease-out 0.5s both;
+}
+
+/* Lock shake animation */
+@keyframes lockShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+#lock-icon {
+  animation: lockShake 0.5s ease-in-out 1.1s both;
+}
+
+/* Wave float animation */
+@keyframes waveFloat {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.wave-bottom {
+  animation: waveFloat 1s ease-in-out 0.8s infinite;
+}
+
+/* Final fade out animation */
+@keyframes fadeOutScreen {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.loading-screen.fade-out {
+  animation: fadeOutScreen 0.5s ease-out forwards;
+}
+
+/* Skip button hover effects - defined separately for better control */
+.skip-button {
+  transition: all 0.3s ease;
+}
+
+.skip-button:hover {
+  border-color: #77F27E !important;
+  color: #77F27E !important;
+  filter: drop-shadow(0 0 8px rgba(119, 242, 126, 0.5)) !important;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 640px) {
+  @keyframes slideIntoPortMobile {
+    0% {
+      transform: translateY(-50%) translateX(0);
+      opacity: 0.7;
+    }
+    50% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateY(-50%) translateX(120px);
+      opacity: 0.95;
+    }
+  }
+
+  .pendrive-sliding {
+    animation: slideIntoPortMobile 1.4s cubic-bezier(0.4, 0.0, 0.2, 1) 0.4s forwards;
+  }
+
+  .loading-background-glow {
+    width: 250px;
+    height: 250px;
+  }
+
+  .status-text {
+    font-size: 16px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .loading-background-glow {
+    width: 350px;
+    height: 350px;
+  }
+}
+
+/* Accessibility - respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .loading-screen.fade-out {
+    animation: fadeOutScreen 0.01ms ease-out forwards;
+  }
+}
+
+/* GPU acceleration for smooth animations */
+.loading-screen,
+.device-container,
+.loading-background-glow,
+.plugsafe-logo-animation {
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, filter;
+}
+
+/* Text styling enhancements */
+.status-container {
+  z-index: 10;
+}
+
+.status-text {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* Ensure skip button is interactive */
+.skip-button {
+  z-index: 11;
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.skip-button:focus-visible {
+  outline: 2px solid #77F27E;
+  outline-offset: 2px;
+}

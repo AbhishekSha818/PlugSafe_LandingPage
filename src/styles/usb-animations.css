@@ -1,0 +1,137 @@
+/* ============================================
+   USB Pendrive Floating Animation Styles
+   Synchronized floating effect for all USB devices
+   ============================================ */
+
+/* Synchronized floating animation - all USBs move together with 45-degree rotation */
+@keyframes floatSynchronized {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(45deg);
+  }
+  25% {
+    transform: translateY(-15px) translateX(5px) rotate(45deg);
+  }
+  50% {
+    transform: translateY(-25px) translateX(0px) rotate(45deg);
+  }
+  75% {
+    transform: translateY(-15px) translateX(-5px) rotate(45deg);
+  }
+}
+
+/* Base USB float animation - all devices in sync */
+.usb-float {
+  animation: floatSynchronized 8s ease-in-out infinite;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+  will-change: transform;
+}
+
+/* Hover state - highlight the hovered USB with enhanced effects */
+.usb-float:hover {
+  opacity: 0.6 !important;
+  filter: brightness(1.25) drop-shadow(0 0 12px rgba(119, 242, 126, 0.6)) drop-shadow(0 0 24px rgba(119, 242, 126, 0.3));
+  z-index: 20;
+  transform-origin: center center;
+  animation: hoverPulse 0.5s ease-in-out forwards !important;
+}
+
+/* Hover pulse effect */
+@keyframes hoverPulse {
+  0% {
+    transform: scale(1) rotate(45deg);
+  }
+  50% {
+    transform: scale(1.08) rotate(45deg);
+  }
+  100% {
+    transform: scale(1) rotate(45deg);
+  }
+}
+
+/* Hover state for dark theme - adjust glow color */
+.dark .usb-float:hover {
+  filter: brightness(1.3) drop-shadow(0 0 16px rgba(119, 242, 126, 0.7)) drop-shadow(0 0 32px rgba(119, 242, 126, 0.4));
+}
+
+/* Animation for scroll-triggered entrance */
+@keyframes slideInFade {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+}
+
+/* Optional: Add entrance animation when component mounts */
+.usb-float {
+  animation: 
+    slideInFade 0.6s ease-out forwards,
+    floatSynchronized 8s ease-in-out 0.6s infinite;
+}
+
+/* Smooth color transition for theme changes */
+.usb-pendrive {
+  transition: color 0.3s ease;
+}
+
+/* Media query optimizations for different devices */
+@media (max-width: 640px) {
+  /* Slower, gentler animation on mobile */
+  .usb-float {
+    animation: 
+      slideInFade 0.6s ease-out forwards,
+      floatSynchronized 10s ease-in-out 0.6s infinite;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Slightly faster animation on desktop for more dynamic feel */
+  .usb-float {
+    animation: 
+      slideInFade 0.6s ease-out forwards,
+      floatSynchronized 7s ease-in-out 0.6s infinite;
+  }
+}
+
+/* Performance optimization - use GPU acceleration */
+.usb-float {
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-origin: center center;
+}
+
+/* Reduce motion for accessibility - respects prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .usb-float {
+    animation: none;
+  }
+
+  .usb-float:hover {
+    opacity: 0.35;
+    filter: brightness(1.05);
+  }
+}
+
+/* Ensure hover effects don't cause layout shifts */
+.usb-float {
+  position: absolute;
+}
+
+/* Stagger entrance animations slightly (optional visual enhancement) */
+.usb-float:nth-child(1) { animation-delay: 0s, 0.6s; }
+.usb-float:nth-child(2) { animation-delay: 0.1s, 0.6s; }
+.usb-float:nth-child(3) { animation-delay: 0.2s, 0.6s; }
+.usb-float:nth-child(4) { animation-delay: 0.3s, 0.6s; }
+.usb-float:nth-child(5) { animation-delay: 0.4s, 0.6s; }
+.usb-float:nth-child(6) { animation-delay: 0.5s, 0.6s; }
+.usb-float:nth-child(7) { animation-delay: 0.1s, 0.6s; }
+.usb-float:nth-child(8) { animation-delay: 0.2s, 0.6s; }
+.usb-float:nth-child(9) { animation-delay: 0.3s, 0.6s; }
+.usb-float:nth-child(10) { animation-delay: 0.4s, 0.6s; }
+.usb-float:nth-child(11) { animation-delay: 0.5s, 0.6s; }
+.usb-float:nth-child(12) { animation-delay: 0s, 0.6s; }
+.usb-float:nth-child(13) { animation-delay: 0.1s, 0.6s; }
