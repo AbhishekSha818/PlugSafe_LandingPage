@@ -17,6 +17,9 @@ class SoundManager {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
           this.audioContext = new AudioContext();
+          console.log('Audio context initialized, state:', this.audioContext.state);
+        } else {
+          console.warn('Web Audio API not available in this browser');
         }
       }
     } catch (e) {
@@ -25,9 +28,16 @@ class SoundManager {
   }
 
   resumeAudioContext() {
-    if (this.audioContext && this.audioContext.state === 'suspended') {
-      this.audioContext.resume();
+    if (!this.audioContext) {
+      this.initAudioContext();
     }
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      this.audioContext.resume().catch(e => {
+        console.warn('Failed to resume audio context:', e);
+      });
+      return 'suspended';
+    }
+    return 'running';
   }
 
   setSoundEnabled(enabled) {
@@ -39,8 +49,13 @@ class SoundManager {
   }
 
   playScanSound() {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled) return;
+    if (!this.audioContext) {
+      console.warn('Audio context not initialized for scan sound');
+      return;
+    }
     try {
+      this.resumeAudioContext(); // Ensure context is resumed
       const now = this.audioContext.currentTime;
       const duration = 0.4;
       const endTime = now + duration;
@@ -58,14 +73,20 @@ class SoundManager {
 
       osc.start(now);
       osc.stop(endTime);
+      console.log('Scan sound played');
     } catch (e) {
       console.warn('Error playing scan sound:', e);
     }
   }
 
   playConnectionSound() {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled) return;
+    if (!this.audioContext) {
+      console.warn('Audio context not initialized for connection sound');
+      return;
+    }
     try {
+      this.resumeAudioContext(); // Ensure context is resumed
       const now = this.audioContext.currentTime;
       const beepDuration = 0.08;
       const gapDuration = 0.04;
@@ -86,14 +107,20 @@ class SoundManager {
         osc.start(beepStart);
         osc.stop(beepEnd);
       }
+      console.log('Connection sound played');
     } catch (e) {
       console.warn('Error playing connection sound:', e);
     }
   }
 
   playSuccessSound() {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled) return;
+    if (!this.audioContext) {
+      console.warn('Audio context not initialized for success sound');
+      return;
+    }
     try {
+      this.resumeAudioContext(); // Ensure context is resumed
       const now = this.audioContext.currentTime;
       const duration = 0.5;
       const endTime = now + duration;
@@ -125,6 +152,7 @@ class SoundManager {
 
       osc2.start(now);
       osc2.stop(endTime);
+      console.log('Success sound played');
     } catch (e) {
       console.warn('Error playing success sound:', e);
     }
