@@ -72,18 +72,16 @@ const Team = () => {
             >
               {/* Avatar */}
               <div 
-                className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:ring-4 group-hover:ring-primary-green group-hover:scale-110 transition-all duration-300 overflow-hidden w-36 h-36 sm:w-40 sm:h-40" 
-                style={{boxShadow: 'var(--tw-shadow, 0 0 0 rgba(0, 0, 0, 0))'}} 
+                className="mb-3 sm:mb-4 inline-block rounded-full group-hover:scale-110 transition-all duration-300 overflow-visible w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center" 
+                style={{padding: '0px'}} 
                 onMouseEnter={(e) => { 
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(119, 242, 126, 0.8), 0 0 40px rgba(119, 242, 126, 0.5), inset 0 0 30px rgba(119, 242, 126, 0.4), 0 0 60px rgba(119, 242, 126, 0.3)';
-                  e.currentTarget.style.outline = '4px solid #77F27E';
-                  e.currentTarget.style.outlineOffset = '0px';
+                  e.currentTarget.style.boxShadow = '0 0 0 12px #77F27E, 0 0 20px rgba(119, 242, 126, 0.8), 0 0 40px rgba(119, 242, 126, 0.5), 0 0 60px rgba(119, 242, 126, 0.3)';
                 }} 
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.boxShadow = '0 0 0 rgba(0, 0, 0, 0)';
-                  e.currentTarget.style.outline = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
+                <div className="bg-primary-green/10 rounded-full overflow-hidden w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center">
                 <img 
                   src={`/${member.image}.jpeg`} 
                   alt={member.name}
@@ -92,6 +90,7 @@ const Team = () => {
                     e.target.style.display = 'none';
                   }}
                 />
+                </div>
               </div>
 
               {/* Name */}
