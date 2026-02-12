@@ -10,10 +10,12 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-primary-green rounded-lg flex items-center justify-center">
-                <span className="text-slate-900 font-bold text-lg">P</span>
-              </div>
-              <span className="text-lg sm:text-xl font-bold">PlugSafe</span>
+              <img 
+                src="/plugsafe-logo.png" 
+                alt="PlugSafe Logo" 
+                className="w-10 h-10 sm:w-12 sm:h-12"
+              />
+              <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">PlugSafe</span>
             </div>
             <p className="text-xs sm:text-sm text-slate-400">
               Ensuring your USB devices are safe, one test at a time.
