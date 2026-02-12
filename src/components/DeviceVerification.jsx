@@ -9,6 +9,7 @@ const DeviceVerification = () => {
   const [showCheckmark, setShowCheckmark] = useState(false);
   const [plugSafeHighlight, setPlugSafeHighlight] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false); // For snap-back animation
+  const [isSnappedToPlugSafe, setIsSnappedToPlugSafe] = useState(false); // Magnetic snap tracking
 
   // Refs
   const containerRef = useRef(null);
@@ -28,6 +29,7 @@ const DeviceVerification = () => {
       startPositionRef.current = { x: 24, y: 0 };
       setPlugSafeHighlight(false);
       setShouldAnimate(false);
+      setIsSnappedToPlugSafe(false);
     };
 
     resetPositions();
@@ -120,9 +122,7 @@ const DeviceVerification = () => {
     // Constrain to container (X only)
     const constrainedX = Math.max(0, Math.min(x, containerRect.width - 60));
 
-    setUsbPosition({ x: constrainedX, y: 0 }); // Y stays at 0 (handled by CSS centering)
-
-    // Check proximity to PlugSafe
+    // Check proximity to PlugSafe for magnetic effect
     if (plugSafeRef.current) {
       const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
       const plugSafePos = {
@@ -130,13 +130,29 @@ const DeviceVerification = () => {
         y: plugSafeRect.top - containerRect.top,
       };
 
-      // For collision detection, use container center for USB Y
       const containerCenterY = containerRect.height / 2;
-      const isNear = checkProximity(
-        { x: constrainedX, y: containerCenterY },
-        plugSafePos
+      
+      // Calculate distance to PlugSafe center
+      const usbCenter = { x: constrainedX + 30, y: containerCenterY };
+      const plugSafeCenter = { x: plugSafePos.x + 60, y: plugSafePos.y + 40 };
+      const distance = Math.sqrt(
+        Math.pow(usbCenter.x - plugSafeCenter.x, 2) +
+          Math.pow(usbCenter.y - plugSafeCenter.y, 2)
       );
-      setPlugSafeHighlight(isNear);
+
+      // Magnetic range: 80px
+      if (distance < 80) {
+        // MAGNET ACTIVE - Snap USB to PlugSafe center
+        const usbStickX = plugSafePos.x - 15; // Center USB on PlugSafe
+        setUsbPosition({ x: usbStickX, y: 0 });
+        setIsSnappedToPlugSafe(true);
+        setPlugSafeHighlight(true);
+      } else {
+        // Outside magnetic range - normal dragging
+        setUsbPosition({ x: constrainedX, y: 0 });
+        setIsSnappedToPlugSafe(false);
+        setPlugSafeHighlight(false);
+      }
     }
   };
 
@@ -147,36 +163,18 @@ const DeviceVerification = () => {
     setIsDragging(false);
     setShouldAnimate(false);
 
-    if (plugSafeRef.current && containerRef.current) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
-
-      const plugSafePos = {
-        x: plugSafeRect.left - containerRect.left,
-        y: plugSafeRect.top - containerRect.top,
-      };
-
-      // Use container center for USB Y position
-      const containerCenterY = containerRect.height / 2;
-      
-      // Check collision
-      if (detectCollision({ x: usbPosition.x, y: containerCenterY }, plugSafePos)) {
-        // Successful verification - USB sticks to PlugSafe
-        setIsVerified(true);
-        setShowCheckmark(true);
-        playSuccessSound();
-
-        // Position USB right at PlugSafe center
-        const usbStickX = plugSafePos.x - 15; // Center USB on PlugSafe (60 width / 2 - half USB width)
-        setUsbPosition({
-          x: usbStickX,
-          y: 0,
-        });
-      } else {
-        // Failed drop - snap USB back to start position with animation
-        setShouldAnimate(true);
-        setUsbPosition(startPositionRef.current);
-      }
+    // If snapped to PlugSafe, verify immediately
+    if (isSnappedToPlugSafe) {
+      // Successful verification - USB sticks to PlugSafe
+      setIsVerified(true);
+      setShowCheckmark(true);
+      playSuccessSound();
+      setIsSnappedToPlugSafe(true); // Keep snapped state
+    } else {
+      // Not snapped - snap USB back to start position with animation
+      setShouldAnimate(true);
+      setUsbPosition(startPositionRef.current);
+      setIsSnappedToPlugSafe(false);
     }
 
     setPlugSafeHighlight(false);
@@ -213,8 +211,7 @@ const DeviceVerification = () => {
 
     const constrainedX = Math.max(0, Math.min(x, containerRect.width - 60));
 
-    setUsbPosition({ x: constrainedX, y: 0 }); // Y stays at 0 (handled by CSS centering)
-
+    // Check proximity to PlugSafe for magnetic effect
     if (plugSafeRef.current) {
       const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
       const plugSafePos = {
@@ -223,11 +220,28 @@ const DeviceVerification = () => {
       };
 
       const containerCenterY = containerRect.height / 2;
-      const isNear = checkProximity(
-        { x: constrainedX, y: containerCenterY },
-        plugSafePos
+      
+      // Calculate distance to PlugSafe center
+      const usbCenter = { x: constrainedX + 30, y: containerCenterY };
+      const plugSafeCenter = { x: plugSafePos.x + 60, y: plugSafePos.y + 40 };
+      const distance = Math.sqrt(
+        Math.pow(usbCenter.x - plugSafeCenter.x, 2) +
+          Math.pow(usbCenter.y - plugSafeCenter.y, 2)
       );
-      setPlugSafeHighlight(isNear);
+
+      // Magnetic range: 80px
+      if (distance < 80) {
+        // MAGNET ACTIVE - Snap USB to PlugSafe center
+        const usbStickX = plugSafePos.x - 15; // Center USB on PlugSafe
+        setUsbPosition({ x: usbStickX, y: 0 });
+        setIsSnappedToPlugSafe(true);
+        setPlugSafeHighlight(true);
+      } else {
+        // Outside magnetic range - normal dragging
+        setUsbPosition({ x: constrainedX, y: 0 });
+        setIsSnappedToPlugSafe(false);
+        setPlugSafeHighlight(false);
+      }
     }
   };
 
@@ -237,34 +251,18 @@ const DeviceVerification = () => {
     setIsDragging(false);
     setShouldAnimate(false);
 
-    if (plugSafeRef.current && containerRef.current) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
-
-      const plugSafePos = {
-        x: plugSafeRect.left - containerRect.left,
-        y: plugSafeRect.top - containerRect.top,
-      };
-
-      const containerCenterY = containerRect.height / 2;
-
-      if (detectCollision({ x: usbPosition.x, y: containerCenterY }, plugSafePos)) {
-        // Successful verification - USB sticks to PlugSafe
-        setIsVerified(true);
-        setShowCheckmark(true);
-        playSuccessSound();
-
-        // Position USB right at PlugSafe center
-        const usbStickX = plugSafePos.x - 15;
-        setUsbPosition({
-          x: usbStickX,
-          y: 0,
-        });
-      } else {
-        // Failed drop - snap USB back to start position with animation
-        setShouldAnimate(true);
-        setUsbPosition(startPositionRef.current);
-      }
+    // If snapped to PlugSafe, verify immediately
+    if (isSnappedToPlugSafe) {
+      // Successful verification - USB sticks to PlugSafe
+      setIsVerified(true);
+      setShowCheckmark(true);
+      playSuccessSound();
+      setIsSnappedToPlugSafe(true); // Keep snapped state
+    } else {
+      // Not snapped - snap USB back to start position with animation
+      setShouldAnimate(true);
+      setUsbPosition(startPositionRef.current);
+      setIsSnappedToPlugSafe(false);
     }
 
     setPlugSafeHighlight(false);
@@ -299,49 +297,62 @@ const DeviceVerification = () => {
                  ? 'opacity 0.1s ease-out' 
                  : shouldAnimate 
                  ? 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                 : 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                 : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+               filter: isSnappedToPlugSafe ? 'drop-shadow(0 0 15px rgba(74, 222, 128, 0.6))' : 'none',
              }}
              onMouseDown={handleMouseDown}
              onTouchStart={handleTouchStart}
            >
-            {/* USB Device Visual */}
-            <div className="w-12 sm:w-14 md:w-16 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 rounded-lg shadow-lg flex flex-col items-center justify-start p-2 border-2 border-slate-400 dark:border-slate-600">
-              {/* USB Port */}
-              <div className="w-6 sm:w-7 md:w-8 h-3 sm:h-4 bg-yellow-600 rounded-sm mt-2 shadow-inner"></div>
+             {/* USB Device Visual */}
+             <div className={`w-12 sm:w-14 md:w-16 h-20 sm:h-24 md:h-28 rounded-lg shadow-lg flex flex-col items-center justify-start p-2 border-2 transition-all duration-200 ${
+               isSnappedToPlugSafe
+                 ? 'bg-gradient-to-b from-green-300 to-green-400 dark:from-green-600 dark:to-green-700 border-primary-green'
+                 : 'bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 border-slate-400 dark:border-slate-600'
+             }`}>
+               {/* USB Port */}
+               <div className="w-6 sm:w-7 md:w-8 h-3 sm:h-4 bg-yellow-600 rounded-sm mt-2 shadow-inner"></div>
 
-              {/* USB Icon */}
-              <div className="text-xl sm:text-2xl md:text-3xl mt-2">⚡</div>
+               {/* USB Icon */}
+               <div className="text-xl sm:text-2xl md:text-3xl mt-2">⚡</div>
 
-              {/* USB Label */}
-              <div className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mt-auto mb-1">
-                USB
-              </div>
-            </div>
-          </div>
+               {/* USB Label */}
+               <div className={`text-xs sm:text-sm font-bold transition-colors duration-200 mt-auto mb-1 ${
+                 isSnappedToPlugSafe
+                   ? 'text-white'
+                   : 'text-slate-700 dark:text-slate-200'
+               }`}>
+                 USB
+               </div>
+             </div>
+           </div>
 
-          {/* PlugSafe Device */}
-          <div
-            ref={plugSafeRef}
-            className={`absolute z-10 right-6 sm:right-10 md:right-12 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-              isVerified ? 'glow-pulse-green' : plugSafeHighlight ? 'glow-highlight-green' : 'glow-default'
-            }`}
-          >
-            {/* PlugSafe Device Visual */}
-            <div className={`w-24 sm:w-28 md:w-32 h-16 sm:h-20 md:h-24 rounded-xl shadow-lg flex flex-col items-center justify-center border-2 transition-all duration-300 ${
-              isVerified
-                ? 'bg-primary-green border-primary-green'
-                : plugSafeHighlight
-                ? 'bg-primary-green/20 border-primary-green'
-                : 'bg-gradient-to-b from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 border-slate-400 dark:border-slate-600'
-            }`}
-            style={{
-              boxShadow: isVerified
-                ? '0 0 30px rgba(74, 222, 128, 0.8), 0 0 60px rgba(74, 222, 128, 0.4)'
-                : plugSafeHighlight
-                ? '0 0 20px rgba(74, 222, 128, 0.5), inset 0 0 10px rgba(74, 222, 128, 0.2)'
-                : '0 0 10px rgba(0, 0, 0, 0.1)',
-            }}
-            >
+           {/* PlugSafe Device */}
+           <div
+             ref={plugSafeRef}
+             className={`absolute z-10 right-6 sm:right-10 md:right-12 top-1/2 transform -translate-y-1/2 transition-all duration-200 ${
+               isVerified ? 'glow-pulse-green' : isSnappedToPlugSafe ? 'glow-magnet-active' : plugSafeHighlight ? 'glow-highlight-green' : 'glow-default'
+             }`}
+           >
+             {/* PlugSafe Device Visual */}
+             <div className={`w-24 sm:w-28 md:w-32 h-16 sm:h-20 md:h-24 rounded-xl shadow-lg flex flex-col items-center justify-center border-2 transition-all duration-200 ${
+               isVerified
+                 ? 'bg-primary-green border-primary-green'
+                 : isSnappedToPlugSafe
+                 ? 'bg-primary-green/30 border-primary-green scale-105'
+                 : plugSafeHighlight
+                 ? 'bg-primary-green/20 border-primary-green'
+                 : 'bg-gradient-to-b from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 border-slate-400 dark:border-slate-600'
+             }`}
+             style={{
+               boxShadow: isVerified
+                 ? '0 0 30px rgba(74, 222, 128, 0.8), 0 0 60px rgba(74, 222, 128, 0.4)'
+                 : isSnappedToPlugSafe
+                 ? '0 0 40px rgba(74, 222, 128, 0.7), 0 0 80px rgba(74, 222, 128, 0.4), inset 0 0 20px rgba(74, 222, 128, 0.3)'
+                 : plugSafeHighlight
+                 ? '0 0 20px rgba(74, 222, 128, 0.5), inset 0 0 10px rgba(74, 222, 128, 0.2)'
+                 : '0 0 10px rgba(0, 0, 0, 0.1)',
+             }}
+             >
               {/* Port Slot */}
               <div className="w-16 sm:w-20 md:w-24 h-8 sm:h-10 md:h-12 bg-slate-800 dark:bg-slate-950 rounded-lg shadow-inner flex items-center justify-center relative border border-slate-900 dark:border-slate-800">
                 {/* Connection lines */}
