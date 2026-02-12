@@ -149,7 +149,7 @@ const DeviceVerification = () => {
       // Magnetic range: 80px
       if (distance < 80) {
         // MAGNET ACTIVE - Snap USB to PlugSafe center
-        const usbStickX = plugSafePos.x - 15; // Center USB on PlugSafe
+        const usbStickX = plugSafePos.x + 30; // Center USB on PlugSafe
         setUsbPosition({ x: usbStickX, y: 0 });
         setIsSnappedToPlugSafe(true);
         setPlugSafeHighlight(true);
@@ -241,7 +241,7 @@ const DeviceVerification = () => {
       // Magnetic range: 80px
       if (distance < 80) {
         // MAGNET ACTIVE - Snap USB to PlugSafe center
-        const usbStickX = plugSafePos.x - 15; // Center USB on PlugSafe
+        const usbStickX = plugSafePos.x + 30; // Center USB on PlugSafe
         setUsbPosition({ x: usbStickX, y: 0 });
         setIsSnappedToPlugSafe(true);
         setPlugSafeHighlight(true);
