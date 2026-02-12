@@ -101,6 +101,9 @@ const DeviceVerification = () => {
 
   // Mouse down - start drag
   const handleMouseDown = (e) => {
+    // Prevent dragging if USB is already verified (locked)
+    if (isVerified) return;
+
     const rect = usbRef.current.getBoundingClientRect();
     const containerRect = containerRef.current.getBoundingClientRect();
 
@@ -114,6 +117,9 @@ const DeviceVerification = () => {
 
   // Mouse move - follow mouse (X only, Y stays centered)
   const handleMouseMove = (e) => {
+    // If verified, USB is locked - don't move
+    if (isVerified) return;
+    
     if (!isDragging || !containerRef.current) return;
 
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -203,6 +209,9 @@ const DeviceVerification = () => {
   };
 
   const handleTouchMove = (e) => {
+    // If verified, USB is locked - don't move
+    if (isVerified) return;
+    
     if (!isDragging || !containerRef.current) return;
 
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -287,7 +296,9 @@ const DeviceVerification = () => {
            {/* USB Device */}
            <div
              ref={usbRef}
-             className={`absolute z-20 cursor-grab active:cursor-grabbing select-none top-1/2 transform -translate-y-1/2 ${
+             className={`absolute z-20 select-none top-1/2 transform -translate-y-1/2 ${
+               isVerified ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'
+             } ${
                isDragging ? 'opacity-90' : 'opacity-100'
              }`}
              style={{
@@ -304,11 +315,18 @@ const DeviceVerification = () => {
              onTouchStart={handleTouchStart}
            >
              {/* USB Device Visual */}
-             <div className={`w-12 sm:w-14 md:w-16 h-20 sm:h-24 md:h-28 rounded-lg shadow-lg flex flex-col items-center justify-start p-2 border-2 transition-all duration-200 ${
+             <div className={`w-12 sm:w-14 md:w-16 h-20 sm:h-24 md:h-28 rounded-lg shadow-lg flex flex-col items-center justify-start p-2 border-2 transition-all duration-200 relative ${
                isSnappedToPlugSafe
                  ? 'bg-gradient-to-b from-green-300 to-green-400 dark:from-green-600 dark:to-green-700 border-primary-green'
                  : 'bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 border-slate-400 dark:border-slate-600'
              }`}>
+               {/* Lock Icon - Only show when verified */}
+               {isVerified && (
+                 <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg z-30">
+                   🔒
+                 </div>
+               )}
+
                {/* USB Port */}
                <div className="w-6 sm:w-7 md:w-8 h-3 sm:h-4 bg-yellow-600 rounded-sm mt-2 shadow-inner"></div>
 
