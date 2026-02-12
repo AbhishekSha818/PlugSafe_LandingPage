@@ -108,39 +108,51 @@ const Team = () => {
                 {member.bio}
               </p>
 
-              {/* Social Links */}
-              <div className="flex justify-center gap-2 sm:gap-3">
-                {member.links?.github && (
-                  <a 
-                    href={member.links.github} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300"
-                  >
-                    <Github size={18} />
-                  </a>
-                )}
-                {member.links?.linkedin && (
-                  <a 
-                    href={member.links.linkedin} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300"
-                  >
-                    <Linkedin size={18} />
-                  </a>
-                )}
-                {member.links?.twitter && (
-                  <a 
-                    href={`https://twitter.com/${member.links.twitter.replace('@', '')}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300"
-                  >
-                    <Twitter size={18} />
-                  </a>
-                )}
-              </div>
+               {/* Social Links */}
+               <div className="flex justify-center gap-2 sm:gap-3">
+                 {member.links?.github ? (
+                   <a 
+                     href={member.links.github} 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300 cursor-pointer"
+                   >
+                     <Github size={18} />
+                   </a>
+                 ) : (
+                   <div className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg text-gray-400 dark:text-slate-600 cursor-not-allowed opacity-50">
+                     <Github size={18} />
+                   </div>
+                 )}
+                 {member.links?.linkedin ? (
+                   <a 
+                     href={member.links.linkedin} 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300 cursor-pointer"
+                   >
+                     <Linkedin size={18} />
+                   </a>
+                 ) : (
+                   <div className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg text-gray-400 dark:text-slate-600 cursor-not-allowed opacity-50">
+                     <Linkedin size={18} />
+                   </div>
+                 )}
+                 {member.links?.twitter ? (
+                   <a 
+                     href={`https://twitter.com/${member.links.twitter.replace('@', '')}`} 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300 cursor-pointer"
+                   >
+                     <Twitter size={18} />
+                   </a>
+                 ) : (
+                   <div className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg text-gray-400 dark:text-slate-600 cursor-not-allowed opacity-50">
+                     <Twitter size={18} />
+                   </div>
+                 )}
+               </div>
             </div>
           ))}
         </div>
