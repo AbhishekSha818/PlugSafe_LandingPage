@@ -4,28 +4,48 @@ import { Github, Linkedin, Twitter } from 'lucide-react';
 const Team = () => {
   const teamMembers = [
     {
-      name: 'Alex Johnson',
-      role: 'Founder & CTO',
-      image: '👨‍💼',
-      bio: 'Security expert with 10+ years in hardware verification',
-    },
-    {
-      name: 'Sarah Williams',
+      name: 'Arnav Ghosh',
       role: 'Lead Engineer',
-      image: '👩‍💻',
+      image: 'ArnavGhosh',
       bio: 'Full-stack developer specializing in IoT security',
+      links: {
+        github: 'https://github.com/NotoriousArnav',
+        linkedin: 'https://www.linkedin.com/in/arnv2004/',
+        twitter: '@arnv2004',
+      },
     },
     {
-      name: 'Mike Chen',
+      name: 'Abhishek Sha',
+      role: 'Founder of PlugSafe',
+      image: 'AbhishekSha',
+      bio: 'Security expert with 5+ years in hardware verification',
+      links: {
+        github: 'https://github.com/AbhishekSha818',
+        linkedin: 'https://www.linkedin.com/in/abhishek-sha-ba916a284/',
+        twitter: null,
+      },
+    },
+    {
+      name: 'Nabarun Dasgupta',
       role: 'ML Specialist',
-      image: '👨‍🔬',
+      image: 'NabarunDasgupta',
       bio: 'AI researcher focused on threat detection systems',
+      links: {
+        github: null,
+        linkedin: null,
+        twitter: null,
+      },
     },
     {
-      name: 'Emma Davis',
+      name: 'Pratima Mishra',
       role: 'Product Manager',
-      image: '👩‍💼',
+      image: 'PratimaMishra',
       bio: 'Product strategist with background in cybersecurity',
+      links: {
+        github: 'https://github.com/11pratima',
+        linkedin: 'https://www.linkedin.com/in/pratima-mishra-34ab0328b/',
+        twitter: null,
+      },
     },
   ];
 
@@ -51,8 +71,15 @@ const Team = () => {
               className="p-6 sm:p-8 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 transition-all duration-300 hover:border-primary-green hover:shadow-lg hover:shadow-primary-green/20 text-center group cursor-pointer transform hover:-translate-y-2"
             >
               {/* Avatar */}
-              <div className="text-5xl sm:text-6xl mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:bg-primary-green group-hover:scale-110 transition-all duration-300">
-                {member.image}
+              <div className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:bg-primary-green group-hover:scale-110 transition-all duration-300 overflow-hidden w-24 h-24 sm:w-28 sm:h-28">
+                <img 
+                  src={`/${member.image}.jpeg`} 
+                  alt={member.name}
+                  className="w-full h-full object-cover rounded-full"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
               </div>
 
               {/* Name */}
@@ -72,15 +99,36 @@ const Team = () => {
 
               {/* Social Links */}
               <div className="flex justify-center gap-2 sm:gap-3">
-                <button className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300">
-                  <Github size={18} />
-                </button>
-                <button className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300">
-                  <Linkedin size={18} />
-                </button>
-                <button className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300">
-                  <Twitter size={18} />
-                </button>
+                {member.links?.github && (
+                  <a 
+                    href={member.links.github} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300"
+                  >
+                    <Github size={18} />
+                  </a>
+                )}
+                {member.links?.linkedin && (
+                  <a 
+                    href={member.links.linkedin} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300"
+                  >
+                    <Linkedin size={18} />
+                  </a>
+                )}
+                {member.links?.twitter && (
+                  <a 
+                    href={`https://twitter.com/${member.links.twitter.replace('@', '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary-green hover:text-slate-900 transition-all duration-300"
+                  >
+                    <Twitter size={18} />
+                  </a>
+                )}
               </div>
             </div>
           ))}
