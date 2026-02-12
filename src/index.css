@@ -25,3 +25,104 @@ body {
 #root {
   width: 100%;
 }
+
+/* Device Verification Animations */
+
+/* Checkmark bounce animation */
+@keyframes checkmark-bounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-checkmark-bounce {
+  animation: checkmark-bounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Status indicator slide animation */
+@keyframes status-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Glow pulse effect - Green */
+@keyframes glow-pulse-green {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 20px rgba(74, 222, 128, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(74, 222, 128, 0.9));
+  }
+}
+
+.glow-pulse-green {
+  animation: glow-pulse-green 2s ease-in-out infinite;
+}
+
+/* Glow highlight effect - Green proximity */
+@keyframes glow-highlight-green {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 15px rgba(74, 222, 128, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(74, 222, 128, 0.7));
+  }
+}
+
+.glow-highlight-green {
+  animation: glow-highlight-green 1.5s ease-in-out infinite;
+}
+
+/* Default glow effect */
+@keyframes glow-default {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.1));
+  }
+}
+
+.glow-default {
+  animation: glow-default 1s ease-in-out infinite;
+}
+
+/* Red glow for unverified state */
+@keyframes glow-red {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.7));
+  }
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+

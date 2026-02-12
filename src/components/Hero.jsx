@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import USBBackground from './USBBackground';
+import DeviceVerification from './DeviceVerification';
 
 const Hero = ({ onGetStarted }) => {
   return (
@@ -59,22 +60,7 @@ const Hero = ({ onGetStarted }) => {
           </div>
 
           {/* Right Visual */}
-          <div className="flex items-center justify-center min-h-64 sm:min-h-96">
-            <div className="relative w-full h-64 sm:h-80 md:h-96">
-              {/* Animated gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary-green/10 via-blue-500/10 to-primary-green/10 rounded-3xl blur-3xl animate-pulse"></div>
-              
-              {/* USB Device Illustration */}
-              <div className="relative flex items-center justify-center h-full">
-                <div className="w-24 h-48 sm:w-28 sm:h-56 md:w-32 md:h-64 bg-primary-green rounded-2xl shadow-2xl shadow-primary-green/50 flex items-center justify-center group cursor-pointer transform transition-transform duration-300 hover:scale-110">
-                  <div className="text-center text-slate-900">
-                    <div className="text-5xl sm:text-6xl md:text-6xl mb-2 sm:mb-4">✓</div>
-                    <div className="text-xs sm:text-sm font-semibold">SAFE</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <DeviceVerification />
         </div>
       </div>
     </section>

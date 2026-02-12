@@ -1,0 +1,397 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Check } from 'lucide-react';
+
+const DeviceVerification = () => {
+  // State management
+  const [isVerified, setIsVerified] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [usbPosition, setUsbPosition] = useState({ x: 0, y: 0 });
+  const [showCheckmark, setShowCheckmark] = useState(false);
+  const [statusX, setStatusX] = useState(0);
+  const [plugSafeHighlight, setPlugSafeHighlight] = useState(false);
+
+  // Refs
+  const containerRef = useRef(null);
+  const usbRef = useRef(null);
+  const plugSafeRef = useRef(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+
+  // Initialize positions on mount
+  useEffect(() => {
+    const resetPositions = () => {
+      setIsVerified(false);
+      setShowCheckmark(false);
+      setStatusX(0);
+      setUsbPosition({ x: 0, y: 0 });
+      setPlugSafeHighlight(false);
+    };
+
+    resetPositions();
+  }, []);
+
+  // Play success sound
+  const playSuccessSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800; // Hz (pitch)
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (err) {
+      console.log('Audio not available:', err);
+    }
+  };
+
+  // Collision detection
+  const detectCollision = (usbPos, plugSafePos) => {
+    const usbCenter = { x: usbPos.x + 30, y: usbPos.y + 50 };
+    const plugSafeCenter = { x: plugSafePos.x + 60, y: plugSafePos.y + 40 };
+
+    const distance = Math.sqrt(
+      Math.pow(usbCenter.x - plugSafeCenter.x, 2) +
+        Math.pow(usbCenter.y - plugSafeCenter.y, 2)
+    );
+
+    return distance < 30; // 30px threshold (MODERATE)
+  };
+
+  // Check proximity for highlighting
+  const checkProximity = (usbPos, plugSafePos) => {
+    const usbCenter = { x: usbPos.x + 30, y: usbPos.y + 50 };
+    const plugSafeCenter = { x: plugSafePos.x + 60, y: plugSafePos.y + 40 };
+
+    const distance = Math.sqrt(
+      Math.pow(usbCenter.x - plugSafeCenter.x, 2) +
+        Math.pow(usbCenter.y - plugSafeCenter.y, 2)
+    );
+
+    return distance < 80; // Highlight at 80px proximity
+  };
+
+  // Mouse down - start drag
+  const handleMouseDown = (e) => {
+    if (isVerified) return; // Don't allow dragging if already verified
+
+    const rect = usbRef.current.getBoundingClientRect();
+    const containerRect = containerRef.current.getBoundingClientRect();
+
+    dragOffsetRef.current = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+
+    setIsDragging(true);
+  };
+
+  // Mouse move - follow mouse
+  const handleMouseMove = (e) => {
+    if (!isDragging || !containerRef.current) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - containerRect.left - dragOffsetRef.current.x;
+    const y = e.clientY - containerRect.top - dragOffsetRef.current.y;
+
+    // Constrain to container
+    const constrainedX = Math.max(0, Math.min(x, containerRect.width - 60));
+    const constrainedY = Math.max(0, Math.min(y, containerRect.height - 100));
+
+    setUsbPosition({ x: constrainedX, y: constrainedY });
+
+    // Check proximity to PlugSafe
+    if (plugSafeRef.current) {
+      const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
+      const plugSafePos = {
+        x: plugSafeRect.left - containerRect.left,
+        y: plugSafeRect.top - containerRect.top,
+      };
+
+      const isNear = checkProximity(
+        { x: constrainedX, y: constrainedY },
+        plugSafePos
+      );
+      setPlugSafeHighlight(isNear);
+    }
+  };
+
+  // Mouse up - drop
+  const handleMouseUp = (e) => {
+    if (!isDragging) return;
+
+    setIsDragging(false);
+
+    if (plugSafeRef.current && containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
+
+      const plugSafePos = {
+        x: plugSafeRect.left - containerRect.left,
+        y: plugSafeRect.top - containerRect.top,
+      };
+
+      // Check collision
+      if (detectCollision(usbPosition, plugSafePos)) {
+        // Successful verification
+        setIsVerified(true);
+        setStatusX(200); // Move status indicator to right
+        setShowCheckmark(true);
+        playSuccessSound();
+
+        // Snap USB to PlugSafe center
+        setUsbPosition({
+          x: plugSafePos.x + 30,
+          y: plugSafePos.y - 10,
+        });
+      } else {
+        // Reset to left
+        setUsbPosition({ x: 0, y: 0 });
+      }
+    }
+
+    setPlugSafeHighlight(false);
+  };
+
+  // Mouse leave container
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      setUsbPosition({ x: 0, y: 0 });
+      setPlugSafeHighlight(false);
+    }
+  };
+
+  // Touch support
+  const handleTouchStart = (e) => {
+    if (isVerified) return;
+
+    const rect = usbRef.current.getBoundingClientRect();
+    const touch = e.touches[0];
+
+    dragOffsetRef.current = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || !containerRef.current) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = touch.clientX - containerRect.left - dragOffsetRef.current.x;
+    const y = touch.clientY - containerRect.top - dragOffsetRef.current.y;
+
+    const constrainedX = Math.max(0, Math.min(x, containerRect.width - 60));
+    const constrainedY = Math.max(0, Math.min(y, containerRect.height - 100));
+
+    setUsbPosition({ x: constrainedX, y: constrainedY });
+
+    if (plugSafeRef.current) {
+      const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
+      const plugSafePos = {
+        x: plugSafeRect.left - containerRect.left,
+        y: plugSafeRect.top - containerRect.top,
+      };
+
+      const isNear = checkProximity(
+        { x: constrainedX, y: constrainedY },
+        plugSafePos
+      );
+      setPlugSafeHighlight(isNear);
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!isDragging) return;
+
+    setIsDragging(false);
+
+    if (plugSafeRef.current && containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const plugSafeRect = plugSafeRef.current.getBoundingClientRect();
+
+      const plugSafePos = {
+        x: plugSafeRect.left - containerRect.left,
+        y: plugSafeRect.top - containerRect.top,
+      };
+
+      if (detectCollision(usbPosition, plugSafePos)) {
+        setIsVerified(true);
+        setStatusX(200);
+        setShowCheckmark(true);
+        playSuccessSound();
+
+        setUsbPosition({
+          x: plugSafePos.x + 30,
+          y: plugSafePos.y - 10,
+        });
+      } else {
+        setUsbPosition({ x: 0, y: 0 });
+      }
+    }
+
+    setPlugSafeHighlight(false);
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-96 sm:min-h-96 md:min-h-screen md:pb-20">
+      <div className="w-full max-w-3xl px-4">
+        {/* Main container */}
+        <div
+          ref={containerRef}
+          className="relative w-full h-64 sm:h-80 md:h-96 bg-gray-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-gray-300 dark:border-slate-700 transition-all duration-300 overflow-hidden"
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-green/5 via-blue-500/5 to-primary-green/5 rounded-3xl"></div>
+
+          {/* USB Device */}
+          <div
+            ref={usbRef}
+            className={`absolute z-20 cursor-grab active:cursor-grabbing transition-all duration-300 select-none ${
+              isDragging ? 'opacity-90' : 'opacity-100'
+            }`}
+            style={{
+              left: `${usbPosition.x}px`,
+              top: `${usbPosition.y}px`,
+              transform: isDragging ? 'scale(1.05)' : 'scale(1)',
+            }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+          >
+            {/* USB Device Visual */}
+            <div className="w-12 sm:w-14 md:w-16 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 rounded-lg shadow-lg flex flex-col items-center justify-start p-2 border-2 border-slate-400 dark:border-slate-600">
+              {/* USB Port */}
+              <div className="w-6 sm:w-7 md:w-8 h-3 sm:h-4 bg-yellow-600 rounded-sm mt-2 shadow-inner"></div>
+
+              {/* USB Icon */}
+              <div className="text-xl sm:text-2xl md:text-3xl mt-2">⚡</div>
+
+              {/* USB Label */}
+              <div className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mt-auto mb-1">
+                USB
+              </div>
+            </div>
+          </div>
+
+          {/* PlugSafe Device */}
+          <div
+            ref={plugSafeRef}
+            className={`absolute z-10 right-6 sm:right-10 md:right-12 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+              isVerified ? 'glow-pulse-green' : plugSafeHighlight ? 'glow-highlight-green' : 'glow-default'
+            }`}
+          >
+            {/* PlugSafe Device Visual */}
+            <div className={`w-24 sm:w-28 md:w-32 h-16 sm:h-20 md:h-24 rounded-xl shadow-lg flex flex-col items-center justify-center border-2 transition-all duration-300 ${
+              isVerified
+                ? 'bg-primary-green border-primary-green'
+                : plugSafeHighlight
+                ? 'bg-primary-green/20 border-primary-green'
+                : 'bg-gradient-to-b from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 border-slate-400 dark:border-slate-600'
+            }`}
+            style={{
+              boxShadow: isVerified
+                ? '0 0 30px rgba(74, 222, 128, 0.8), 0 0 60px rgba(74, 222, 128, 0.4)'
+                : plugSafeHighlight
+                ? '0 0 20px rgba(74, 222, 128, 0.5), inset 0 0 10px rgba(74, 222, 128, 0.2)'
+                : '0 0 10px rgba(0, 0, 0, 0.1)',
+            }}
+            >
+              {/* Port Slot */}
+              <div className="w-16 sm:w-20 md:w-24 h-8 sm:h-10 md:h-12 bg-slate-800 dark:bg-slate-950 rounded-lg shadow-inner flex items-center justify-center relative border border-slate-900 dark:border-slate-800">
+                {/* Connection lines */}
+                <div className="absolute w-2 h-1 bg-yellow-400 rounded-full left-2"></div>
+                <div className="absolute w-2 h-1 bg-red-400 rounded-full left-1/2 transform -translate-x-1/2"></div>
+                <div className="absolute w-2 h-1 bg-black rounded-full right-2"></div>
+
+                {/* Status indicator inside */}
+                {isVerified && (
+                  <div className="absolute animate-checkmark-bounce">
+                    <Check
+                      size={24}
+                      className="text-white drop-shadow-lg"
+                      strokeWidth={3}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* PlugSafe Label */}
+              <div className={`text-xs sm:text-sm font-bold mt-2 transition-colors duration-300 ${
+                isVerified
+                  ? 'text-white'
+                  : 'text-slate-700 dark:text-slate-300'
+              }`}>
+                PlugSafe
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Indicator (Switch-like) */}
+        <div className="mt-6 sm:mt-8 md:mt-10 flex justify-center">
+          <div className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 bg-gray-200 dark:bg-slate-700 rounded-full border-2 border-gray-300 dark:border-slate-600 flex items-center transition-all duration-300 overflow-hidden">
+            {/* Left label - Unverified */}
+            <div className="absolute left-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 transition-colors duration-300 pointer-events-none">
+              ○ Unverified
+            </div>
+
+            {/* Right label - Safe */}
+            <div className="absolute right-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 transition-colors duration-300 pointer-events-none">
+              Safe ✓
+            </div>
+
+            {/* Animated indicator */}
+            <div
+              className={`absolute left-0 w-1/2 h-full rounded-full transition-all duration-500 flex items-center justify-center font-bold text-lg sm:text-xl ${
+                isVerified
+                  ? 'translate-x-full bg-gradient-to-r from-primary-green to-green-500 text-white shadow-lg shadow-primary-green/50'
+                  : 'bg-red-500 text-white shadow-lg shadow-red-500/50'
+              }`}
+              style={{
+                transform: isVerified ? 'translateX(100%)' : 'translateX(0)',
+              }}
+            >
+              {isVerified ? '✓' : '○'}
+            </div>
+          </div>
+        </div>
+
+        {/* Hint Text */}
+        <div className={`mt-4 sm:mt-6 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-500 italic transition-opacity duration-500 ${
+          isDragging ? 'opacity-20' : 'opacity-40'
+        }`}>
+          Please plug USB device to our PlugSafe
+        </div>
+
+        {/* Verification Message */}
+        {isVerified && (
+          <div className="mt-4 sm:mt-6 text-center animate-fade-in">
+            <div className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-primary-green/10 border border-primary-green rounded-lg">
+              <p className="text-sm sm:text-base font-semibold text-primary-green">
+                ✓ Device Verified - Safe to Use
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default DeviceVerification;
