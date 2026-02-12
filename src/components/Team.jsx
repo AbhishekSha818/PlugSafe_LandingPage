@@ -71,7 +71,7 @@ const Team = () => {
               className="p-6 sm:p-8 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 transition-all duration-300 hover:border-primary-green hover:shadow-lg hover:shadow-primary-green/20 text-center group cursor-pointer transform hover:-translate-y-2"
             >
               {/* Avatar */}
-              <div className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:shadow-lg group-hover:shadow-primary-green/30 group-hover:scale-110 transition-all duration-300 overflow-hidden w-32 h-32 sm:w-36 sm:h-36">
+              <div className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:shadow-2xl group-hover:shadow-primary-green/60 group-hover:scale-110 transition-all duration-300 overflow-hidden w-32 h-32 sm:w-36 sm:h-36">
                 <img 
                   src={`/${member.image}.jpeg`} 
                   alt={member.name}
