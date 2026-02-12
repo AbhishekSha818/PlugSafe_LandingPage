@@ -319,16 +319,9 @@ const DeviceVerification = () => {
                isSnappedToPlugSafe
                  ? 'bg-gradient-to-b from-green-300 to-green-400 dark:from-green-600 dark:to-green-700 border-primary-green'
                  : 'bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 border-slate-400 dark:border-slate-600'
-             }`}>
-               {/* Lock Icon - Only show when verified */}
-               {isVerified && (
-                 <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg z-30">
-                   🔒
-                 </div>
-               )}
-
-               {/* USB Port */}
-               <div className="w-6 sm:w-7 md:w-8 h-3 sm:h-4 bg-yellow-600 rounded-sm mt-2 shadow-inner"></div>
+              }`}>
+                {/* USB Port */}
+                <div className="w-6 sm:w-7 md:w-8 h-3 sm:h-4 bg-yellow-600 rounded-sm mt-2 shadow-inner"></div>
 
                {/* USB Icon */}
                <div className="text-xl sm:text-2xl md:text-3xl mt-2">⚡</div>
