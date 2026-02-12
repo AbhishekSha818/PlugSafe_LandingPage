@@ -76,7 +76,7 @@ const Team = () => {
                   className="rounded-full group-hover:scale-110 transition-all duration-300 overflow-hidden w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center" 
                   style={{padding: '0px'}} 
                   onMouseEnter={(e) => { 
-                    e.currentTarget.style.boxShadow = '0 0 0 12px #39FF14, 0 0 20px rgba(57, 255, 20, 0.8), 0 0 40px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 0 0 12px #4ade80, 0 0 15px rgba(74, 222, 128, 0.6), 0 0 30px rgba(74, 222, 128, 0.4), 0 0 50px rgba(74, 222, 128, 0.2)';
                   }} 
                   onMouseLeave={(e) => { 
                     e.currentTarget.style.boxShadow = 'none';
