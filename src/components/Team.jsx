@@ -71,7 +71,7 @@ const Team = () => {
               className="p-6 sm:p-8 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 transition-all duration-300 hover:border-primary-green hover:shadow-lg hover:shadow-primary-green/20 text-center group cursor-pointer transform hover:-translate-y-2"
             >
               {/* Avatar */}
-              <div className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:ring-4 group-hover:ring-primary-green group-hover:scale-110 transition-all duration-300 overflow-hidden w-32 h-32 sm:w-36 sm:h-36" style={{boxShadow: 'var(--tw-shadow, 0 0 0 rgba(0, 0, 0, 0))'}} onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 20px rgba(119, 242, 126, 0.6), 0 0 40px rgba(119, 242, 126, 0.3), inset 0 0 20px rgba(119, 242, 126, 0.2)'; }} onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 0 rgba(0, 0, 0, 0)'; }}>
+              <div className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:ring-2 group-hover:ring-primary-green group-hover:scale-110 transition-all duration-300 overflow-hidden w-36 h-36 sm:w-40 sm:h-40" style={{boxShadow: 'var(--tw-shadow, 0 0 0 rgba(0, 0, 0, 0))'}} onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 20px rgba(119, 242, 126, 0.6), 0 0 40px rgba(119, 242, 126, 0.3), inset 0 0 20px rgba(119, 242, 126, 0.2)'; }} onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 0 rgba(0, 0, 0, 0)'; }}>
                 <img 
                   src={`/${member.image}.jpeg`} 
                   alt={member.name}
