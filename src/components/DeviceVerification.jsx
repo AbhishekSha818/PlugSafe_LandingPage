@@ -5,27 +5,29 @@ const DeviceVerification = () => {
   // State management
   const [isVerified, setIsVerified] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [usbPosition, setUsbPosition] = useState({ x: 0, y: 0 });
+  const [usbPosition, setUsbPosition] = useState({ x: 24, y: 0 });
   const [showCheckmark, setShowCheckmark] = useState(false);
-  const [statusX, setStatusX] = useState(0);
   const [plugSafeHighlight, setPlugSafeHighlight] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false); // For snap-back animation
 
   // Refs
   const containerRef = useRef(null);
   const usbRef = useRef(null);
   const plugSafeRef = useRef(null);
   const dragOffsetRef = useRef({ x: 0, y: 0 });
+  const startPositionRef = useRef({ x: 24, y: 0 }); // Track start position
 
   // Initialize positions on mount
   useEffect(() => {
     const resetPositions = () => {
       setIsVerified(false);
       setShowCheckmark(false);
-      setStatusX(0);
       // Initialize USB in center vertically with left gap matching PlugSafe right gap
       // Using approximate gap values: 24px (sm:40px, md:48px) converted to approximate pixel
       setUsbPosition({ x: 24, y: 0 });
+      startPositionRef.current = { x: 24, y: 0 };
       setPlugSafeHighlight(false);
+      setShouldAnimate(false);
     };
 
     resetPositions();
@@ -143,6 +145,7 @@ const DeviceVerification = () => {
     if (!isDragging) return;
 
     setIsDragging(false);
+    setShouldAnimate(false);
 
     if (plugSafeRef.current && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -158,20 +161,21 @@ const DeviceVerification = () => {
       
       // Check collision
       if (detectCollision({ x: usbPosition.x, y: containerCenterY }, plugSafePos)) {
-        // Successful verification
+        // Successful verification - USB sticks to PlugSafe
         setIsVerified(true);
-        setStatusX(200); // Move status indicator to right
         setShowCheckmark(true);
         playSuccessSound();
 
-        // USB stays at PlugSafe position (don't snap back)
+        // Position USB right at PlugSafe center
+        const usbStickX = plugSafePos.x - 15; // Center USB on PlugSafe (60 width / 2 - half USB width)
         setUsbPosition({
-          x: plugSafePos.x + 30,
+          x: usbStickX,
           y: 0,
         });
       } else {
-        // Failed - just stop dragging, don't move
-        // (USB stays wherever it was)
+        // Failed drop - snap USB back to start position with animation
+        setShouldAnimate(true);
+        setUsbPosition(startPositionRef.current);
       }
     }
 
@@ -231,6 +235,7 @@ const DeviceVerification = () => {
     if (!isDragging) return;
 
     setIsDragging(false);
+    setShouldAnimate(false);
 
     if (plugSafeRef.current && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -244,18 +249,22 @@ const DeviceVerification = () => {
       const containerCenterY = containerRect.height / 2;
 
       if (detectCollision({ x: usbPosition.x, y: containerCenterY }, plugSafePos)) {
+        // Successful verification - USB sticks to PlugSafe
         setIsVerified(true);
-        setStatusX(200);
         setShowCheckmark(true);
         playSuccessSound();
 
-        // USB stays at PlugSafe position (don't snap back)
+        // Position USB right at PlugSafe center
+        const usbStickX = plugSafePos.x - 15;
         setUsbPosition({
-          x: plugSafePos.x + 30,
+          x: usbStickX,
           y: 0,
         });
+      } else {
+        // Failed drop - snap USB back to start position with animation
+        setShouldAnimate(true);
+        setUsbPosition(startPositionRef.current);
       }
-      // If collision not detected, just stop dragging (USB stays where it is)
     }
 
     setPlugSafeHighlight(false);
@@ -277,20 +286,24 @@ const DeviceVerification = () => {
           {/* Animated gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary-green/5 via-blue-500/5 to-primary-green/5 rounded-3xl"></div>
 
-          {/* USB Device */}
-          <div
-            ref={usbRef}
-            className={`absolute z-20 cursor-grab active:cursor-grabbing select-none top-1/2 transform -translate-y-1/2 ${
-              isDragging ? 'opacity-90' : 'opacity-100'
-            }`}
-            style={{
-              left: `${usbPosition.x}px`,
-              transform: isDragging ? 'scale(1.05) translateY(-50%)' : 'translateY(-50%)',
-              transition: isDragging ? 'opacity 0.1s ease-out' : 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            }}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
-          >
+           {/* USB Device */}
+           <div
+             ref={usbRef}
+             className={`absolute z-20 cursor-grab active:cursor-grabbing select-none top-1/2 transform -translate-y-1/2 ${
+               isDragging ? 'opacity-90' : 'opacity-100'
+             }`}
+             style={{
+               left: `${usbPosition.x}px`,
+               transform: isDragging ? 'scale(1.05) translateY(-50%)' : 'translateY(-50%)',
+               transition: isDragging 
+                 ? 'opacity 0.1s ease-out' 
+                 : shouldAnimate 
+                 ? 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                 : 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+             }}
+             onMouseDown={handleMouseDown}
+             onTouchStart={handleTouchStart}
+           >
             {/* USB Device Visual */}
             <div className="w-12 sm:w-14 md:w-16 h-20 sm:h-24 md:h-28 bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 rounded-lg shadow-lg flex flex-col items-center justify-start p-2 border-2 border-slate-400 dark:border-slate-600">
               {/* USB Port */}
@@ -364,12 +377,16 @@ const DeviceVerification = () => {
         <div className="mt-6 sm:mt-8 md:mt-10 flex justify-center">
           <div className="relative w-48 sm:w-56 md:w-64 h-12 sm:h-14 bg-gray-200 dark:bg-slate-700 rounded-full border-2 border-gray-300 dark:border-slate-600 flex items-center transition-all duration-300 overflow-visible">
             {/* Left label - Unverified (ALWAYS VISIBLE on top) */}
-            <div className="absolute left-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white transition-colors duration-300 pointer-events-none z-20 drop-shadow-lg">
+            <div className={`absolute left-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold transition-colors duration-500 pointer-events-none z-20 drop-shadow-lg ${
+              isVerified ? 'text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'
+            }`}>
               ○ Unverified
             </div>
 
             {/* Right label - Safe (ALWAYS VISIBLE on top) */}
-            <div className="absolute right-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold text-slate-900 dark:text-white transition-colors duration-300 pointer-events-none z-20 drop-shadow-lg">
+            <div className={`absolute right-0 w-1/2 h-full flex items-center justify-center text-xs sm:text-sm font-bold transition-colors duration-500 pointer-events-none z-20 drop-shadow-lg ${
+              isVerified ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
+            }`}>
               Safe ✓
             </div>
 
