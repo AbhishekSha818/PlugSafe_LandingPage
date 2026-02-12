@@ -71,25 +71,25 @@ const Team = () => {
               className="p-6 sm:p-8 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 transition-all duration-300 hover:border-primary-green hover:shadow-lg hover:shadow-primary-green/20 text-center group cursor-pointer transform hover:-translate-y-2"
             >
               {/* Avatar */}
-              <div 
-                className="mb-3 sm:mb-4 inline-block rounded-full group-hover:scale-110 transition-all duration-300 overflow-visible w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center" 
-                style={{padding: '0px'}} 
-                onMouseEnter={(e) => { 
-                  e.currentTarget.style.boxShadow = '0 0 0 12px #77F27E, 0 0 20px rgba(119, 242, 126, 0.8), 0 0 40px rgba(119, 242, 126, 0.5), 0 0 60px rgba(119, 242, 126, 0.3)';
-                }} 
-                onMouseLeave={(e) => { 
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <div className="bg-primary-green/10 rounded-full overflow-hidden w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center">
-                <img 
-                  src={`/${member.image}.jpeg`} 
-                  alt={member.name}
-                  className="w-full h-full object-cover rounded-full"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
+              <div className="flex justify-center mb-3 sm:mb-4">
+                <div 
+                  className="rounded-full group-hover:scale-110 transition-all duration-300 overflow-hidden w-36 h-36 sm:w-40 sm:h-40 flex items-center justify-center" 
+                  style={{padding: '0px'}} 
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.boxShadow = '0 0 0 12px #77F27E, 0 0 20px rgba(119, 242, 126, 0.8), 0 0 40px rgba(119, 242, 126, 0.5), 0 0 60px rgba(119, 242, 126, 0.3)';
+                  }} 
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
-                />
+                >
+                  <img 
+                    src={`/${member.image}.jpeg`} 
+                    alt={member.name}
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
                 </div>
               </div>
 
