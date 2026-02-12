@@ -97,8 +97,6 @@ const DeviceVerification = () => {
 
   // Mouse down - start drag
   const handleMouseDown = (e) => {
-    if (isVerified) return; // Don't allow dragging if already verified
-
     const rect = usbRef.current.getBoundingClientRect();
     const containerRect = containerRef.current.getBoundingClientRect();
 
@@ -191,8 +189,6 @@ const DeviceVerification = () => {
 
   // Touch support
   const handleTouchStart = (e) => {
-    if (isVerified) return;
-
     const rect = usbRef.current.getBoundingClientRect();
     const touch = e.touches[0];
 
