@@ -3,12 +3,12 @@ import { Smartphone, Search, CheckCircle, AlertCircle } from 'lucide-react';
 
 const HowItWorks = () => {
   const steps = [
-    {
-      icon: Smartphone,
-      number: '01',
-      title: 'Connect Device',
-      description: 'Simply plug in your USB device to start the verification process.',
-    },
+     {
+       icon: Smartphone,
+       number: '01',
+       title: 'Connect Device',
+       description: 'Connect your USB device and let PlugSafe begin instant verification.',
+     },
     {
       icon: Search,
       number: '02',
