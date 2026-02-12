@@ -72,15 +72,16 @@ const Team = () => {
             >
               {/* Avatar */}
               <div 
-                className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:ring-2 group-hover:ring-primary-green group-hover:scale-110 transition-all duration-300 overflow-hidden w-36 h-36 sm:w-40 sm:h-40 ring-0 group-hover:ring-primary-green" 
-                style={{boxShadow: 'var(--tw-shadow, 0 0 0 rgba(0, 0, 0, 0))', borderColor: 'transparent'}} 
+                className="mb-3 sm:mb-4 inline-block p-3 sm:p-4 bg-primary-green/10 rounded-full group-hover:ring-4 group-hover:ring-primary-green group-hover:scale-110 transition-all duration-300 overflow-hidden w-36 h-36 sm:w-40 sm:h-40" 
+                style={{boxShadow: 'var(--tw-shadow, 0 0 0 rgba(0, 0, 0, 0))'}} 
                 onMouseEnter={(e) => { 
-                  e.currentTarget.style.boxShadow = '0 0 20px rgba(119, 242, 126, 0.8), 0 0 40px rgba(119, 242, 126, 0.5), inset 0 0 20px rgba(119, 242, 126, 0.3)';
-                  e.currentTarget.style.borderColor = '#77F27E';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(119, 242, 126, 0.8), 0 0 40px rgba(119, 242, 126, 0.5), inset 0 0 30px rgba(119, 242, 126, 0.4), 0 0 60px rgba(119, 242, 126, 0.3)';
+                  e.currentTarget.style.outline = '4px solid #77F27E';
+                  e.currentTarget.style.outlineOffset = '0px';
                 }} 
                 onMouseLeave={(e) => { 
                   e.currentTarget.style.boxShadow = '0 0 0 rgba(0, 0, 0, 0)';
-                  e.currentTarget.style.borderColor = 'transparent';
+                  e.currentTarget.style.outline = 'none';
                 }}
               >
                 <img 
