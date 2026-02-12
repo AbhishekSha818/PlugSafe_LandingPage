@@ -420,19 +420,18 @@ const DeviceVerification = () => {
             </div>
 
             {/* Animated indicator - Behind labels with transparency */}
-            <div
-              className={`absolute left-0 w-1/2 h-full rounded-full transition-all duration-500 flex items-center justify-center font-bold text-lg sm:text-xl z-10 ${
-                isVerified
-                  ? 'translate-x-full bg-gradient-to-r from-primary-green to-green-500 text-white shadow-lg shadow-primary-green/50'
-                  : 'bg-red-500 text-white shadow-lg shadow-red-500/50'
-              }`}
-              style={{
-                transform: isVerified ? 'translateX(100%)' : 'translateX(0)',
-                opacity: 0.7,
-              }}
-            >
-              {isVerified ? '✓' : '○'}
-            </div>
+             <div
+               className={`absolute left-0 w-1/2 h-full rounded-full transition-all duration-500 flex items-center justify-center font-bold text-lg sm:text-xl z-10 ${
+                 isVerified
+                   ? 'translate-x-full bg-gradient-to-r from-primary-green to-green-500 text-white shadow-lg shadow-primary-green/50'
+                   : 'bg-red-500 text-white shadow-lg shadow-red-500/50'
+               }`}
+               style={{
+                 transform: isVerified ? 'translateX(100%)' : 'translateX(0)',
+                 opacity: 0.7,
+               }}
+             >
+             </div>
           </div>
         </div>
 
