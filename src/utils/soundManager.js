@@ -17,13 +17,13 @@ class SoundManager {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
           this.audioContext = new AudioContext();
-          console.log('Audio context initialized, state:', this.audioContext.state);
+          console.log('✓ Audio context initialized, state:', this.audioContext.state);
         } else {
-          console.warn('Web Audio API not available in this browser');
+          console.warn('✗ Web Audio API not available in this browser');
         }
       }
     } catch (e) {
-      console.warn('Web Audio API not available:', e);
+      console.warn('✗ Web Audio API initialization error:', e);
     }
   }
 
@@ -31,16 +31,24 @@ class SoundManager {
     if (!this.audioContext) {
       this.initAudioContext();
     }
-    if (this.audioContext && this.audioContext.state === 'suspended') {
-      const resumePromise = this.audioContext.resume();
-      if (resumePromise) {
-        resumePromise
-          .then(() => {
-            console.log('Audio context resumed successfully');
-          })
-          .catch(e => {
-            console.warn('Failed to resume audio context:', e);
-          });
+    
+    if (this.audioContext) {
+      const state = this.audioContext.state;
+      console.log('Audio context state:', state);
+      
+      if (state === 'suspended') {
+        const resumePromise = this.audioContext.resume();
+        if (resumePromise) {
+          resumePromise
+            .then(() => {
+              console.log('✓ Audio context resumed successfully');
+            })
+            .catch(e => {
+              console.warn('✗ Failed to resume audio context:', e);
+            });
+        }
+      } else if (state === 'running') {
+        console.log('✓ Audio context already running');
       }
     }
   }
@@ -54,11 +62,8 @@ class SoundManager {
   }
 
   playScanSound() {
-    if (!this.soundEnabled) return;
-    if (!this.audioContext) {
-      console.warn('Audio context not initialized for scan sound');
-      return;
-    }
+    console.log('playScanSound called - soundEnabled:', this.soundEnabled, 'audioContext:', !!this.audioContext);
+    if (!this.soundEnabled || !this.audioContext) return;
     try {
       this.resumeAudioContext(); // Ensure context is resumed
       const now = this.audioContext.currentTime;
@@ -78,9 +83,9 @@ class SoundManager {
 
       osc.start(now);
       osc.stop(endTime);
-      console.log('Scan sound played');
+      console.log('✓ Scan sound played');
     } catch (e) {
-      console.warn('Error playing scan sound:', e);
+      console.warn('✗ Error playing scan sound:', e);
     }
   }
 

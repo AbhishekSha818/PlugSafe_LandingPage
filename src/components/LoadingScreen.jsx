@@ -10,8 +10,16 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
   const [showSkipButton, setShowSkipButton] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  // Fallback: unlock audio on any user interaction
+  const unlockAudio = () => {
+    console.log('User interaction detected - unlocking audio');
+    soundManager.resumeAudioContext();
+  };
+
   useEffect(() => {
     if (!isVisible) return;
+    
+    console.log('LoadingScreen mounted, attempting to unlock audio');
     
     // Try to unlock audio playback with a workaround
     const playSilentSound = () => {
@@ -27,9 +35,10 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
           gain.gain.setValueAtTime(0, now);
           osc.start(now);
           osc.stop(now + 0.001);
+          console.log('✓ Silent unlock sound played');
         }
       } catch (e) {
-        console.warn('Silent sound unlock failed:', e);
+        console.warn('✗ Silent sound unlock failed:', e);
       }
     };
     
@@ -87,7 +96,9 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
   return (
     <div 
       className={`loading-screen ${shouldFadeOut ? 'fade-out' : ''}`}
-      style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#0F0F0F', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', zIndex: 9999, overflow: 'hidden' }}
+      onClick={unlockAudio}
+      onTouchStart={unlockAudio}
+      style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#0F0F0F', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', zIndex: 9999, overflow: 'hidden', cursor: 'pointer' }}
     >
       <div className="loading-background-glow"></div>
 
