@@ -9,13 +9,28 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
   const [shouldFadeOut, setShouldFadeOut] = useState(false);
   const [showSkipButton, setShowSkipButton] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [audioContextStarted, setAudioContextStarted] = useState(false);
+  const [needsInteraction, setNeedsInteraction] = useState(false);
 
   useEffect(() => {
     if (!isVisible) return;
     
-    // Resume audio context immediately
-    soundManager.resumeAudioContext();
+    // Attempt to resume audio context immediately
+    const result = soundManager.resumeAudioContext();
     soundManager.setSoundEnabled(soundEnabled);
+    
+    // Check if we need user interaction
+    if (result === 'suspended') {
+      setNeedsInteraction(true);
+      console.log('Audio context suspended - user interaction needed');
+    } else {
+      setAudioContextStarted(true);
+      console.log('Audio context started');
+    }
+  }, [isVisible, soundEnabled]);
+
+  useEffect(() => {
+    if (!isVisible || !audioContextStarted) return;
 
     const timings = {
       scanSound: 150,
@@ -39,7 +54,17 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
     timers.push(setTimeout(() => { if (onLoadingComplete) onLoadingComplete(); }, timings.complete));
 
     return () => { timers.forEach((timer) => clearTimeout(timer)); };
-  }, [isVisible, onLoadingComplete, soundEnabled]);
+  }, [isVisible, onLoadingComplete, audioContextStarted, soundEnabled]);
+
+  const handleScreenInteraction = () => {
+    // Resume audio context on first user interaction
+    if (!audioContextStarted) {
+      console.log('Audio context resumed via user interaction');
+      soundManager.resumeAudioContext();
+      setAudioContextStarted(true);
+      setNeedsInteraction(false);
+    }
+  };
 
   const handleSkip = () => {
     setShouldFadeOut(true);
@@ -59,7 +84,9 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
 
   return (
     <div 
-      className={`loading-screen ${shouldFadeOut ? 'fade-out' : ''}`}
+      className={`loading-screen ${shouldFadeOut ? 'fade-out' : ''}`} 
+      onClick={handleScreenInteraction}
+      onTouchStart={handleScreenInteraction}
       style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#0F0F0F', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', zIndex: 9999, overflow: 'hidden' }}
     >
       <div className="loading-background-glow"></div>
@@ -71,6 +98,7 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
         {showIcon && <PlugSafeLogo className="plugsafe-logo-animation" />}
         <div className="status-container">
           <p className="status-text" style={{ fontSize: '18px', fontWeight: '500', color: status.includes('Verified') ? '#77F27E' : '#FFFFFF', textAlign: 'center', minHeight: '24px', letterSpacing: '0.5px', textShadow: status.includes('Verified') ? '0 0 10px rgba(119, 242, 126, 0.5)' : 'none', transition: 'all 0.4s ease' }}>{status}</p>
+          {needsInteraction && <p style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)', marginTop: '8px', animation: 'pulse 1.5s ease-in-out infinite' }}>Click or tap to enable audio</p>}
         </div>
       </div>
 
@@ -86,6 +114,7 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
 
       <style jsx>{`
         @keyframes fadeOutScreen { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
         .loading-screen.fade-out { animation: fadeOutScreen 0.5s ease forwards; }
         @keyframes glowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
         .loading-background-glow { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(119, 242, 126, 0.15) 0%, rgba(119, 242, 126, 0.05) 50%, transparent 100%); borderRadius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: glowPulse 3s ease-in-out infinite; pointerEvents: none; }
