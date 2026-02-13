@@ -35,9 +35,7 @@ class SoundManager {
       this.audioContext.resume().catch(e => {
         console.warn('Failed to resume audio context:', e);
       });
-      return 'suspended';
     }
-    return 'running';
   }
 
   setSoundEnabled(enabled) {
