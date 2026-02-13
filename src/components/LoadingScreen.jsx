@@ -13,8 +13,32 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
   useEffect(() => {
     if (!isVisible) return;
     
-    // Resume audio context immediately
-    soundManager.resumeAudioContext();
+    // Try to unlock audio playback with a workaround
+    const playSilentSound = () => {
+      try {
+        soundManager.resumeAudioContext();
+        // Play a silent sound to unlock audio context
+        if (soundManager.audioContext && soundManager.audioContext.state !== 'closed') {
+          const now = soundManager.audioContext.currentTime;
+          const osc = soundManager.audioContext.createOscillator();
+          const gain = soundManager.audioContext.createGain();
+          osc.connect(gain);
+          gain.connect(soundManager.audioContext.destination);
+          gain.gain.setValueAtTime(0, now);
+          osc.start(now);
+          osc.stop(now + 0.001);
+        }
+      } catch (e) {
+        console.warn('Silent sound unlock failed:', e);
+      }
+    };
+    
+    // Attempt immediate unlock
+    playSilentSound();
+    
+    // Try again after a small delay
+    const unlockTimer = setTimeout(playSilentSound, 100);
+    
     soundManager.setSoundEnabled(soundEnabled);
 
     const timings = {
@@ -38,7 +62,10 @@ const LoadingScreen = ({ isVisible = true, onLoadingComplete }) => {
     timers.push(setTimeout(() => { setShouldFadeOut(true); }, timings.fadeOut));
     timers.push(setTimeout(() => { if (onLoadingComplete) onLoadingComplete(); }, timings.complete));
 
-    return () => { timers.forEach((timer) => clearTimeout(timer)); };
+    return () => { 
+      clearTimeout(unlockTimer);
+      timers.forEach((timer) => clearTimeout(timer)); 
+    };
   }, [isVisible, onLoadingComplete, soundEnabled]);
 
   const handleSkip = () => {

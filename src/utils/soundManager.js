@@ -32,9 +32,16 @@ class SoundManager {
       this.initAudioContext();
     }
     if (this.audioContext && this.audioContext.state === 'suspended') {
-      this.audioContext.resume().catch(e => {
-        console.warn('Failed to resume audio context:', e);
-      });
+      const resumePromise = this.audioContext.resume();
+      if (resumePromise) {
+        resumePromise
+          .then(() => {
+            console.log('Audio context resumed successfully');
+          })
+          .catch(e => {
+            console.warn('Failed to resume audio context:', e);
+          });
+      }
     }
   }
 
